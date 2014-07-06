@@ -39,7 +39,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   force = d3.layout.force()
     .size([w, h])
     .nodes(nodes)
-    .links(links)
     .gravity(1)
     .linkDistance(50)
     .charge(-3000)
@@ -57,8 +56,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     .size([w, h])
 
   force2.start()
-
-  console.log links
 
   node = vis.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node")
   node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3)
