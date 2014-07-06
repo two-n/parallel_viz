@@ -20,6 +20,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   for i in [0..29]
     node = {
       label : "node " + i
+      fixed : true
     }
     nodes.push node
     labelAnchors.push {
@@ -30,13 +31,13 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     }
 
   for d,i in nodes
-    for j in [0..i]
-      if Math.random() > 0.95
-        links.push {
-            source : i
-            target : j
-            weight : Math.random()
-          }
+    # for j in [0..i]
+      # if Math.random() > 0.95
+        # links.push {
+        #     source : i
+        #     target : j
+        #     weight : Math.random()
+        #   }
     labelAnchorLinks.push {
       source : i * 2
       target : i * 2 + 1
@@ -101,8 +102,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
       return "translate(" + d.x + "," + d.y + ")"
     )
 
-  force.on("tick", () ->
-
+  updateLabels = () -> 
     force2.start()
 
     node.call(updateNode)
@@ -129,5 +129,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
 
     link.call(updateLink)
     anchorLink.call(updateLink)
-  )
+
+  force.on("tick", updateLabels)
+
 )
