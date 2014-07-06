@@ -15,7 +15,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   nodes = []
   labelAnchors = []
   labelAnchorLinks = []
-  links = []
 
   for i in [0..29]
     node = {
@@ -31,20 +30,11 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     }
 
   for d,i in nodes
-    # for j in [0..i]
-      # if Math.random() > 0.95
-        # links.push {
-        #     source : i
-        #     target : j
-        #     weight : Math.random()
-        #   }
     labelAnchorLinks.push {
       source : i * 2
       target : i * 2 + 1
       weight : 1
     }
-
-  # console.log links
 
   force = d3.layout.force()
     .size([w, h])
@@ -68,12 +58,11 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
 
   force2.start()
 
-  link = vis.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", "#CCC")
+  console.log links
 
   node = vis.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node")
   node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3)
   node.call(force.drag)
-
 
   anchorLink = vis.selectAll("line.anchorLink").data(labelAnchorLinks).enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999")
 
@@ -102,7 +91,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
       return "translate(" + d.x + "," + d.y + ")"
     )
 
-  updateLabels = () -> 
+  updateLabels = () ->
     force2.start()
 
     node.call(updateNode)
@@ -127,7 +116,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
 
     anchorNode.call(updateNode)
 
-    link.call(updateLink)
     anchorLink.call(updateLink)
 
   force.on("tick", updateLabels)
