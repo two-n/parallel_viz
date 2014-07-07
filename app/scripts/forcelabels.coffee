@@ -78,7 +78,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     .gravity(0)
     .linkDistance(0)
     .linkStrength(8)
-    .charge(-150)
+    .charge(-100)
     .size([w, h])
     .on("tick",updateLabels)
     .start()
@@ -107,6 +107,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     this.attr("transform", (d) ->
       return "translate(" + d.x + "," + d.y + ")"
     )
-    
+
   node.call(updateNode)
 )
