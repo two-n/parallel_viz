@@ -5,12 +5,14 @@ require.config
     'threejs': '../vendor/threejs/build/three'
 
 requirejs( ['d3', 'threejs'], (d3, threejs) ->
-  w = 960
+  w = 700
   h = 500
 
-  labelDistance = 0
+  random = (s) ->
+        s = Math.sin(s) * 10000;
+        s - Math.floor(s)
 
-  vis = d3.select("body").append("svg:svg").attr("width", w).attr("height", h)
+  svg = d3.select("body").append("svg:svg").attr("width", w).attr("height", h)
 
   labelAnchors = []
   labelAnchorLinks = []
@@ -18,11 +20,11 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   xScale = d3.scale.linear().range([w,0]).domain([0,1])
   yScale = d3.scale.linear().range([0,h]).domain([0,1])
 
-  numNodes = 45
-  data = [0..numNodes-1].map () ->
+  numNodes = 40
+  data = [0..numNodes-1].map (i) ->
     {
-      x: Math.random()
-      y: Math.random()
+      x: random(i*2)
+      y: random(i)
     }
 
   nodes = []
@@ -60,12 +62,12 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
 
   force.start()
 
-  node = vis.selectAll("g.node").data(nodes).enter().append("svg:g").attr("class", "node")
-  node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3)
+  node = svg.selectAll("g.node").data(nodes).enter().append("svg:g").attr("class", "node")
+  node.append("svg:circle").attr("r", 5).style("fill", "#00").style("stroke", "#FFF").style("stroke-width", 3)
 
-  anchorLink = vis.selectAll("line.anchorLink").data(labelAnchorLinks).enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999")
+  anchorLink = svg.selectAll("line.anchorLink").data(labelAnchorLinks).enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999")
 
-  anchorNode = vis.selectAll("g.anchorNode").data(force.nodes()).enter().append("svg:g").attr("class", "anchorNode")
+  anchorNode = svg.selectAll("g.anchorNode").data(force.nodes()).enter().append("svg:g").attr("class", "anchorNode")
   anchorNode.append("svg:circle").attr("r", 0).style("fill", "#FFF")
   anchorNode.append("svg:text").text((d, i) -> if i % 2 is 0 then return "" else return d.node.label
   ).style("fill", "#555").style("font-family", "Arial").style("font-size", 12)
@@ -85,11 +87,10 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     this.attr("transform", (d) ->
       return "translate(" + d.x + "," + d.y + ")"
     )
+  node.call(updateNode)
 
   updateLabels = () ->
     force.start()
-
-    node.call(updateNode)
 
     anchorNode.each( (d, i) ->
       if(i % 2 == 0)
@@ -97,6 +98,10 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
         d.y = d.node.y
       else
         b = this.childNodes[1].getBBox()
+
+        # if i is 3
+        #   if (new Date()).getMilliseconds() % 9 is 0
+        #     console.log this.childNodes[1].getBBox()
 
         diffX = d.x - d.node.x
         diffY = d.y - d.node.y
