@@ -8,8 +8,9 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   w = 700
   h = 500
 
+  #
   random = (s) ->
-        s = Math.sin(s) * 10000;
+        s = Math.sin(s) * 100000;
         s - Math.floor(s)
 
   svg = d3.select("body").append("svg:svg").attr("width", w).attr("height", h)
@@ -20,10 +21,10 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   xScale = d3.scale.linear().range([w,0]).domain([0,1])
   yScale = d3.scale.linear().range([0,h]).domain([0,1])
 
-  numNodes = 40
+  numNodes = 80
   data = [0..numNodes-1].map (i) ->
     {
-      x: random(i*2)
+      x: random(i+numNodes)
       y: random(i)
     }
 
@@ -51,16 +52,36 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
       weight : 1
     }
 
+  updateLabels = () ->
+    anchorNode.each( (d, i) ->
+      if(i % 2 == 0)
+        d.x = d.node.x
+        d.y = d.node.y
+      else
+        #align label on its vector
+        b = this.childNodes[0].getBBox()
+        diffX = d.x - d.node.x
+        diffY = d.y - d.node.y
+        dist = Math.sqrt(diffX * diffX + diffY * diffY)
+        shiftX = b.width * (diffX - dist) / (dist * 2)
+        shiftX = Math.max(-b.width, Math.min(0, shiftX))
+        shiftY = 5
+        this.childNodes[0].setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")")
+    )
+
+    anchorNode.call(updateNode)
+    anchorLink.call(updateLink)
+
   force = d3.layout.force()
     .nodes(labelAnchors)
     .links(labelAnchorLinks)
     .gravity(0)
     .linkDistance(0)
     .linkStrength(8)
-    .charge(-100)
+    .charge(-150)
     .size([w, h])
-
-  force.start()
+    .on("tick",updateLabels)
+    .start()
 
   node = svg.selectAll("g.node").data(nodes).enter().append("svg:g").attr("class", "node")
   node.append("svg:circle").attr("r", 5).style("fill", "#00").style("stroke", "#FFF").style("stroke-width", 3)
@@ -68,7 +89,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   anchorLink = svg.selectAll("line.anchorLink").data(labelAnchorLinks).enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999")
 
   anchorNode = svg.selectAll("g.anchorNode").data(force.nodes()).enter().append("svg:g").attr("class", "anchorNode")
-  anchorNode.append("svg:circle").attr("r", 0).style("fill", "#FFF")
   anchorNode.append("svg:text").text((d, i) -> if i % 2 is 0 then return "" else return d.node.label
   ).style("fill", "#555").style("font-family", "Arial").style("font-size", 12)
 
@@ -87,36 +107,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     this.attr("transform", (d) ->
       return "translate(" + d.x + "," + d.y + ")"
     )
+    
   node.call(updateNode)
-
-  updateLabels = () ->
-    force.start()
-
-    anchorNode.each( (d, i) ->
-      if(i % 2 == 0)
-        d.x = d.node.x
-        d.y = d.node.y
-      else
-        b = this.childNodes[1].getBBox()
-
-        # if i is 3
-        #   if (new Date()).getMilliseconds() % 9 is 0
-        #     console.log this.childNodes[1].getBBox()
-
-        diffX = d.x - d.node.x
-        diffY = d.y - d.node.y
-
-        dist = Math.sqrt(diffX * diffX + diffY * diffY)
-
-        shiftX = b.width * (diffX - dist) / (dist * 2)
-        shiftX = Math.max(-b.width, Math.min(0, shiftX))
-        shiftY = 5
-        this.childNodes[1].setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")")
-    )
-
-    anchorNode.call(updateNode)
-    anchorLink.call(updateLink)
-
-  setInterval((updateLabels),10)
-
 )
