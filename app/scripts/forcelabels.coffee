@@ -12,14 +12,27 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
 
   vis = d3.select("body").append("svg:svg").attr("width", w).attr("height", h)
 
-  nodes = []
   labelAnchors = []
   labelAnchorLinks = []
 
-  for i in [0..29]
+  xScale = d3.scale.linear().range([w,0]).domain([0,1])
+  yScale = d3.scale.linear().range([0,h]).domain([0,1])
+
+  numNodes = 45
+  data = [0..numNodes-1].map () ->
+    {
+      x: Math.random()
+      y: Math.random()
+    }
+
+  nodes = []
+  for d in data
     node = {
-      label : "node " + i
-      fixed : true
+      cx: xScale(d.x)
+      cy: yScale(d.y)
+      x: xScale(d.x)
+      y: yScale(d.y)
+      label : "it's label time!"
     }
     nodes.push node
     labelAnchors.push {
@@ -37,16 +50,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     }
 
   force = d3.layout.force()
-    .size([w, h])
-    .nodes(nodes)
-    .gravity(1)
-    .linkDistance(50)
-    .charge(-3000)
-    .linkStrength((x) -> x.weight * 10)
-
-  force.start()
-
-  force2 = d3.layout.force()
     .nodes(labelAnchors)
     .links(labelAnchorLinks)
     .gravity(0)
@@ -55,21 +58,16 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     .charge(-100)
     .size([w, h])
 
-  force2.start()
+  force.start()
 
-  node = vis.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node")
+  node = vis.selectAll("g.node").data(nodes).enter().append("svg:g").attr("class", "node")
   node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3)
-  node.call(force.drag)
 
   anchorLink = vis.selectAll("line.anchorLink").data(labelAnchorLinks).enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999")
 
-  anchorNode = vis.selectAll("g.anchorNode").data(force2.nodes()).enter().append("svg:g").attr("class", "anchorNode")
+  anchorNode = vis.selectAll("g.anchorNode").data(force.nodes()).enter().append("svg:g").attr("class", "anchorNode")
   anchorNode.append("svg:circle").attr("r", 0).style("fill", "#FFF")
-  anchorNode.append("svg:text").text((d, i) ->
-    if i % 2 is 0
-      ""
-    else
-      d.node.label
+  anchorNode.append("svg:text").text((d, i) -> if i % 2 is 0 then return "" else return d.node.label
   ).style("fill", "#555").style("font-family", "Arial").style("font-size", 12)
 
   updateLink = () ->
@@ -89,7 +87,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     )
 
   updateLabels = () ->
-    force2.start()
+    force.start()
 
     node.call(updateNode)
 
@@ -112,9 +110,8 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     )
 
     anchorNode.call(updateNode)
-
     anchorLink.call(updateLink)
 
-  force.on("tick", updateLabels)
+  setInterval((updateLabels),10)
 
 )
