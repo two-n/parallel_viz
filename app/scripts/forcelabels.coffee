@@ -5,8 +5,12 @@ require.config
     'threejs': '../vendor/threejs/build/three'
 
 requirejs( ['d3', 'threejs'], (d3, threejs) ->
-  w = 700
-  h = 500
+  w = 800
+  h = 600
+
+  margin = 100
+
+  # seed = 0
 
   #
   random = (s) ->
@@ -18,15 +22,21 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   labelAnchors = []
   labelAnchorLinks = []
 
-  xScale = d3.scale.linear().range([w,0]).domain([0,1])
-  yScale = d3.scale.linear().range([0,h]).domain([0,1])
+  xScale = d3.scale.linear().range([w-margin,margin]).domain([0,1])
+  yScale = d3.scale.linear().range([margin,h-margin]).domain([0,1])
 
   numNodes = 80
   data = [0..numNodes-1].map (i) ->
-    {
-      x: random(i+numNodes)
-      y: random(i)
-    }
+    if seed?
+      {
+        x: random(i+seed+numNodes)
+        y: random(i+seed)
+      }
+    else
+      {
+        x: Math.random()
+        y: Math.random()
+      }
 
   nodes = []
   for d in data
@@ -65,7 +75,7 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
         dist = Math.sqrt(diffX * diffX + diffY * diffY)
         shiftX = b.width * (diffX - dist) / (dist * 2)
         shiftX = Math.max(-b.width, Math.min(0, shiftX))
-        shiftY = 5
+        shiftY = 0
         this.childNodes[0].setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")")
     )
 
@@ -76,9 +86,9 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
     .nodes(labelAnchors)
     .links(labelAnchorLinks)
     .gravity(0)
-    .linkDistance(0)
+    .linkDistance(1)
     .linkStrength(8)
-    .charge(-100)
+    .charge(-200)
     .size([w, h])
     .on("tick",updateLabels)
     .start()

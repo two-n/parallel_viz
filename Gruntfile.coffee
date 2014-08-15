@@ -42,7 +42,7 @@ module.exports = (grunt) ->
       development:
         options:
           hostname: ''
-          port: 9000
+          port: 8000
           base: 'build/development'
           livereload: true
           middleware: (connect, options) -> [
