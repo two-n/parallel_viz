@@ -34,11 +34,6 @@ requirejs( ['d3', 'threejs'], (d3, threejs) ->
   geometry = new THREE.BoxGeometry(1,1,1)
 
   material = new THREE.MeshLambertMaterial({color: 0xCC0000})
-  material = new THREE.ShaderMaterial ->
-    {
-      vertexShader: vert,
-      fragmentShader: frag
-    }
   cube = new THREE.Mesh(geometry, material)
   scene.add(cube)
 
