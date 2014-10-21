@@ -14,7 +14,7 @@ require.config
 
 requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js'], (d3, threejs) ->
 
-  texSize = 512
+  texSize = 64
   simulationShader = null
   fboParticles = null
   material2 = null
@@ -25,20 +25,32 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
   timer = 0
 
   init = () ->
-    d3.json("/data/state1.json", (err, _state1) ->
+    d3.json("/data/state1.json", (err, state1) ->
+      window.state1 = state1
+
+      dataLength = state1.nodes.length
+
       renderer = new THREE.WebGLRenderer()
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000)
       camera.position.z = 2
       scene = new THREE.Scene()
 
+      extent = {
+        x: d3.extent( state1.nodes , (d) -> d.x)
+        y: d3.extent( state1.nodes , (d) -> d.y)
+      }
+
+      scale = {
+        x: d3.scale.linear().domain(extent.x).range([-0.5,0.5])
+        y: d3.scale.linear().domain(extent.y).range([-0.5,0.5])
+      }
+
       data = (new Float32Array(texSize*texSize*3))
-      [0...data.length].forEach (i) ->
-        if i % 3 is 0
-          data[i] = Math.random() * 4-2
-        if i % 3 is 1
-          data[i] = Math.random() * 4-2
-        if i % 3 is 2
-          data[i] = Math.random() * 4-2
+      [0...data.length].forEach (i) -> data[i] = 0
+      state1.nodes.map (d,i) ->
+        data[i*3] = scale.x(d.x)
+        data[i*3+1] = scale.y(d.y)
+
       texture = new THREE.DataTexture(data, texSize, texSize, THREE.RGBFormat, THREE.FloatType)
       texture.minFilter = THREE.NearestFilter
       texture.magFilter = THREE.NearestFilter
@@ -81,6 +93,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
         vertex = new THREE.Vector3()
         vertex.x = ( i % texSize ) / texSize
         vertex.y = Math.floor( i / texSize ) / texSize
+        console.log vertex
         geometry2.vertices.push( vertex )
 
       material2 = new THREE.ShaderMaterial {
