@@ -18,8 +18,6 @@
         </script>
         <script type="x-shader/x-fragment" id="fboFrag">
 
-    #define THROTTLE 10000.0
-
     // simulation
     varying vec2 vUv;
 
@@ -66,6 +64,8 @@
         </script>
         <script type="x-shader/x-fragment" id="fboRenderFrag">
     uniform sampler2D map;
+    uniform sampler2D colorFromTexture;
+
     uniform float effector;
 
     varying vec2 vUv;
@@ -74,6 +74,7 @@
     void main()
     {
     gl_FragColor = vec4( 1.2,1.1,1.8,1.0 );
+    gl_FragColor = texture2D( colorFromTexture, vUv );
     gl_FragColor *= 1.5;
 
 

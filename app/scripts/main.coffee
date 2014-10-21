@@ -109,7 +109,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
                 "height": { type: "f", value: texSize }
                 "pointSize": { type: "f", value: 2 }
                 "effector" : { type: "f", value: 0 }
-
+                "colorFromTexture": { type: "t", value: textures[0] }
             }
             vertexShader: document.getElementById('fboRenderVert').innerHTML
             fragmentShader: document.getElementById('fboRenderFrag').innerHTML
@@ -160,7 +160,6 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     # simulationShader.uniforms.start.value = 1fboParticles.in
     fboParticles.simulate(fboParticles.out)
     material2.uniforms.map.value = fboParticles.out
-    # debugger
 
     controls.update()
     renderer.render( scene, camera )
