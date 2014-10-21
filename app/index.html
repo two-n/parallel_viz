@@ -22,9 +22,6 @@
 
     uniform sampler2D tPositions;
 
-    uniform float timer;
-    uniform vec3 velocity;
-
     vec4 grad4(float j, vec4 ip)
     {
     const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
@@ -69,13 +66,6 @@
     varying vec4 vPosition;
 
 
-    // Pseudo random number generator
-    float rand(vec2 co)
-    {
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-    }
-
-
     void main()
     {
 
@@ -83,7 +73,7 @@
 
     vec3 position = ( texture2D( map, vUv ).rgb  );
 
-    gl_PointSize = 2.0;
+    gl_PointSize = pointSize;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
     }

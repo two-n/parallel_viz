@@ -35,8 +35,10 @@ module.exports = (grunt) ->
         src: 'app/scripts/**/*.coffee'
         dest: 'build/development/'
       data:
-        src: 'app/data/**/*'
+        cwd: 'app'
+        src: 'data/*'
         dest: 'build/development/'
+        expand: true
       vendor:
         src: 'vendor/**/*.{js,css,png,gif}'
         dest: 'build/development/'
