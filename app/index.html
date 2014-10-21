@@ -17,6 +17,9 @@
     } 
         </script>
         <script type="x-shader/x-fragment" id="fboFrag">
+
+    #define THROTTLE 10000.0
+
     // simulation
     varying vec2 vUv;
 
@@ -25,23 +28,13 @@
 
     uniform float timer;
 
-    // vec3 lerp(vec3 colorone, vec3 colortwo, float value)
-    // {
-    //     return (colorone + value*(colortwo-colorone));
-    // }
-
     void main() 
     {
     vec3 pos0 = texture2D( start, vUv ).xyz;
     vec3 pos1 = texture2D( end, vUv ).xyz;
 
-    // pos.x += snoise(vec4(pos.x, pos.y, pos.z, timer/10000.0)) * 0.01;
-    // pos.y += snoise(vec4(pos.x, pos.y, pos.z, 1.352+timer/10000.0)) * 0.01;
-    // pos.z += snoise(vec4(pos.x, pos.y, pos.z, 12.352+timer/10000.0)) * 0.01;
+    vec3 pos = mix(pos0, pos1, timer);
 
-    vec3 pos = mix(pos0, pos1, timer/10000.0 );
-
-    // Write new position out
     gl_FragColor = vec4(pos, 1.0);
 
     }

@@ -144,21 +144,26 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     )
 
   animate = (t) ->
-      requestAnimationFrame(animate);
 
-      simulationShader.uniforms.timer.value = t
+    throttle = 10000.0
 
-      tmp = fboParticles.in
-      fboParticles.in = fboParticles.out
-      fboParticles.out = tmp
+    requestAnimationFrame(animate);
 
-      simulationShader.uniforms.start.value = fboParticles.in
-      fboParticles.simulate(fboParticles.out)
-      material2.uniforms.map.value = fboParticles.out
-      # debugger
+    tick = Math.abs((t%throttle)/throttle - 0.5) * 2
 
-      controls.update()
-      renderer.render( scene, camera )
+    simulationShader.uniforms.timer.value = tick
+
+    tmp = fboParticles.in
+    fboParticles.in = fboParticles.out
+    fboParticles.out = tmp
+
+    # simulationShader.uniforms.start.value = 1fboParticles.in
+    fboParticles.simulate(fboParticles.out)
+    material2.uniforms.map.value = fboParticles.out
+    # debugger
+
+    controls.update()
+    renderer.render( scene, camera )
 
   init()
   animate(new Date().getTime());
