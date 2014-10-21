@@ -23,31 +23,23 @@
     uniform sampler2D start;
     uniform sampler2D end;
 
-    vec4 grad4(float j, vec4 ip)
-    {
-    const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
-    vec4 p,s;
+    uniform float timer;
 
-    p.xyz = floor( fract (vec3(j) * ip.xyz) * 7.0) * ip.z - 1.0;
-    p.w = 1.5 - dot(abs(p.xyz), ones.xyz);
-    s = vec4(lessThan(p, vec4(0.0)));
-    p.xyz = p.xyz + (s.xyz*2.0 - 1.0) * s.www;
-
-    return p;
-    }
-
-    // (sqrt(5) - 1)/4 = F4, used once below
-    #define F4 0.309016994374947451
+    // vec3 lerp(vec3 colorone, vec3 colortwo, float value)
+    // {
+    //     return (colorone + value*(colortwo-colorone));
+    // }
 
     void main() 
     {
-    vec3 pos = texture2D( start, vUv ).xyz;
+    vec3 pos0 = texture2D( start, vUv ).xyz;
+    vec3 pos1 = texture2D( end, vUv ).xyz;
 
     // pos.x += snoise(vec4(pos.x, pos.y, pos.z, timer/10000.0)) * 0.01;
     // pos.y += snoise(vec4(pos.x, pos.y, pos.z, 1.352+timer/10000.0)) * 0.01;
     // pos.z += snoise(vec4(pos.x, pos.y, pos.z, 12.352+timer/10000.0)) * 0.01;
 
-
+    vec3 pos = mix(pos0, pos1, timer/10000.0 );
 
     // Write new position out
     gl_FragColor = vec4(pos, 1.0);
