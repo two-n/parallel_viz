@@ -33,7 +33,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     data = (new Float32Array(texSize*texSize*3))
     [0...data.length].forEach (i) ->
       if i % 3 > 0
-        data[i] = Math.random() * 2-1
+        data[i] = Math.random() * 4-2
       else
         data[i] = 0
     texture = new THREE.DataTexture(data, texSize, texSize, THREE.RGBFormat, THREE.FloatType)
