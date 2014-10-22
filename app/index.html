@@ -42,6 +42,7 @@
     uniform sampler2D map;
     uniform sampler2D startSize;
     uniform sampler2D endSize;
+    uniform sampler2D sprite;
 
     uniform float width;
     uniform float height;
@@ -73,6 +74,7 @@
     uniform sampler2D map;
     uniform sampler2D startColor;
     uniform sampler2D endColor;
+    uniform sampler2D sprite;
 
     uniform float effector;
 
@@ -87,6 +89,9 @@
     vec4 color1 = texture2D( endColor, vUv );
 
     vec4 color = mix(color0, color1, timer);
+    color = vec4(color.xyz,0);
+    vec4 glyph = texture2D( sprite, gl_PointCoord );
+    color = mix(color,glyph,0.5);
 
     gl_FragColor = color;
     }

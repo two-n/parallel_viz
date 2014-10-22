@@ -129,6 +129,8 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           vertex.y = Math.floor( i / texSize ) / texSize
           geometry2.vertices.push( vertex )
 
+        sprite = THREE.ImageUtils.loadTexture( "/data/ring_transp_256.png" )
+
         material2 = new THREE.ShaderMaterial {
             uniforms: {
                 "map": { type: "t", value: rtTexturePos }
@@ -141,6 +143,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
                 "startSize": { type: "t", value: sizeTextures[0] }
                 "endSize": { type: "t", value: sizeTextures[1] }
                 "timer": { type: "f", value: 0}
+                "sprite": { type: "t", value: sprite }
             }
             vertexShader: document.getElementById('fboRenderVert').innerHTML
             fragmentShader: document.getElementById('fboRenderFrag').innerHTML
