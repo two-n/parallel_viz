@@ -138,7 +138,6 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
                 "width": { type: "f", value: texSize }
                 "height": { type: "f", value: texSize }
                 "pointSize": { type: "f", value: 2 }
-                "effector" : { type: "f", value: 0 }
                 "startColor": { type: "t", value: colorTextures[0] }
                 "endColor": { type: "t", value: colorTextures[1] }
                 "startSize": { type: "t", value: sizeTextures[0] }

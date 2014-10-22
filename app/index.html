@@ -4,97 +4,85 @@
     <style>canvas { width: 100%; height: 100% }</style>
   </head>
   <body>
-        <script type="x-shader/x-vertex" id="fboVert">
-    varying vec2 vUv;
+    <script type="x-shader/x-vertex" id="fboVert">
+        varying vec2 vUv;
 
-    void main() 
-    {
+        void main()
+        {
+            vUv = vec2(uv.x, uv.y);
 
-    vUv = vec2(uv.x, uv.y);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fboFrag">
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        varying vec2 vUv;
 
-    } 
-        </script>
-        <script type="x-shader/x-fragment" id="fboFrag">
+        uniform sampler2D start;
+        uniform sampler2D end;
 
-    // simulation
-    varying vec2 vUv;
+        uniform float timer;
 
-    uniform sampler2D start;
-    uniform sampler2D end;
+        void main()
+        {
+            vec3 pos0 = texture2D( start, vUv ).xyz;
+            vec3 pos1 = texture2D( end, vUv ).xyz;
 
-    uniform float timer;
+            vec3 pos = mix(pos0, pos1, timer);
 
-    void main() 
-    {
-    vec3 pos0 = texture2D( start, vUv ).xyz;
-    vec3 pos1 = texture2D( end, vUv ).xyz;
+            gl_FragColor = vec4(pos, 1.0);
+        }
+    </script>
 
-    vec3 pos = mix(pos0, pos1, timer);
+    <script type="x-shader/x-vertex" id="fboRenderVert">
+        uniform sampler2D map;
+        uniform sampler2D startSize;
+        uniform sampler2D endSize;
 
-    gl_FragColor = vec4(pos, 1.0);
+        uniform float width;
+        uniform float height;
 
-    }
-        </script>
+        varying vec2 vUv;
 
-        <script type="x-shader/x-vertex" id="fboRenderVert">
-    uniform sampler2D map;
-    uniform sampler2D startSize;
-    uniform sampler2D endSize;
-    uniform sampler2D sprite;
+        uniform float timer;
 
-    uniform float width;
-    uniform float height;
+        void main()
+        {
+            vUv = position.xy + vec2( 0.5 / width, 0.5 / height );
 
-    uniform float pointSize;
+            vec3 position = ( texture2D( map, vUv ).rgb  );
 
-    varying vec2 vUv;
-    varying vec4 vPosition;
+            vec4 size0 = texture2D( startSize, vUv );
+            vec4 size1 = texture2D( endSize, vUv );
 
-    uniform float timer;
+            vec4 size = mix(size0, size1, timer);
+            gl_PointSize = ( size.r  );
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
 
-    void main()
-    {
+    <script type="x-shader/x-fragment" id="fboRenderFrag">
+        uniform sampler2D startColor;
+        uniform sampler2D endColor;
+        uniform sampler2D sprite;
 
-    vUv = position.xy + vec2( 0.5 / width, 0.5 / height );
+        varying vec2 vUv;
 
-    vec3 position = ( texture2D( map, vUv ).rgb  );
+        uniform float timer;
 
-    vec4 size0 = texture2D( startSize, vUv );
-    vec4 size1 = texture2D( endSize, vUv );
+        void main()
+        {
+            vec4 color0 = texture2D( startColor, vUv );
+            vec4 color1 = texture2D( endColor, vUv );
 
-    vec4 size = mix(size0, size1, timer);
-    gl_PointSize = ( size.r  );
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            vec4 color = mix(color0, color1, timer);
+            vec4 glyph = texture2D( sprite, gl_PointCoord );
+            color = vec4(color.rgb,glyph.a);
 
-    }
-        </script>
-        <script type="x-shader/x-fragment" id="fboRenderFrag">
-    uniform sampler2D map;
-    uniform sampler2D startColor;
-    uniform sampler2D endColor;
-    uniform sampler2D sprite;
+            gl_FragColor = color;
+        }
+    </script>
 
-    uniform float effector;
-
-    varying vec2 vUv;
-    varying vec4 vPosition;
-
-    uniform float timer;
-
-    void main()
-    {
-    vec4 color0 = texture2D( startColor, vUv );
-    vec4 color1 = texture2D( endColor, vUv );
-
-    vec4 color = mix(color0, color1, timer);
-    vec4 glyph = texture2D( sprite, gl_PointCoord );
-    color = vec4(color.rgb,glyph.a);
-
-    gl_FragColor = color;
-    }
-        </script>
     <script data-main="assets/main.js" src="vendor/requirejs/require.js">></script>
 
   </body>
