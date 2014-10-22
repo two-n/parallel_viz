@@ -39,6 +39,11 @@ module.exports = (grunt) ->
         src: 'data/*'
         dest: 'build/development/'
         expand: true
+      textures:
+        cwd: 'app'
+        src: 'textures/*'
+        dest: 'build/development/'
+        expand: true
       vendor:
         src: 'vendor/**/*.{js,css,png,gif}'
         dest: 'build/development/'
@@ -65,6 +70,9 @@ module.exports = (grunt) ->
       data:
         files: 'app/data/**/*.coffee'
         tasks: ['copy:data']
+      textures:
+        files: 'app/textures/**/*.coffee'
+        tasks: ['copy:textures']
       options:
         livereload: true
 
@@ -74,6 +82,7 @@ module.exports = (grunt) ->
     'copy:source'
     'copy:html'
     'copy:data'
+    'copy:textures'
     'coffee:development'
     'connect:development'
     'watch'

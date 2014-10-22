@@ -130,7 +130,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           vertex.y = Math.floor( i / texSize ) / texSize
           geometry2.vertices.push( vertex )
 
-        sprite = THREE.ImageUtils.loadTexture( "/data/ring_transp_256.png" )
+        sprite = THREE.ImageUtils.loadTexture( "/textures/ring_transp_256.png" )
 
         material2 = new THREE.ShaderMaterial {
             uniforms: {
