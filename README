@@ -1,0 +1,1 @@
+This project is an example of the use of WebGL framebuffer objects to display a scatter chart. Project expects 2 json files with object 'nodes' containing an array of objects with parameters - x,y,r,color.
