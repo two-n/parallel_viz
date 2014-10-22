@@ -68,7 +68,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
             colorData[j*3+1] = parseInt(colorIn.substr(2,2),16)/255
             colorData[j*3+2] = parseInt(colorIn.substr(4,2),16)/255
 
-            sizeData[j*3] = 1
+            sizeData[j*3] = parseFloat(d.r)
             sizeData[j*3+1] = 0
             sizeData[j*3+2] = 0
 
@@ -89,8 +89,6 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           sizeTexture.magFilter = THREE.NearestFilter
           sizeTexture.needsUpdate = true
           sizeTextures.push sizeTexture
-
-          console.log sizeTextures,sizeData
 
         rtTexturePos = new THREE.WebGLRenderTarget(texSize,texSize, {
           wrapS:THREE.RepeatWrapping

@@ -51,6 +51,7 @@
     varying vec2 vUv;
     varying vec4 vPosition;
 
+    uniform float timer;
 
     void main()
     {
@@ -59,7 +60,11 @@
 
     vec3 position = ( texture2D( map, vUv ).rgb  );
 
-    gl_PointSize = ( texture2D( startSize, vUv ).r  );
+    vec4 size0 = texture2D( startSize, vUv );
+    vec4 size1 = texture2D( endSize, vUv );
+
+    vec4 size = mix(size0, size1, timer);
+    gl_PointSize = ( size.r  );
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
     }
