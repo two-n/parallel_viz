@@ -17,12 +17,11 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
   texSize = 128
   simulationShader = null
   fboParticles = null
-  material2 = null
+  material = null
   controls = null
   renderer = null
   scene = null
   camera = null
-  timer = 0
 
   init = () ->
     renderer = new THREE.WebGLRenderer()
@@ -33,6 +32,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     d3.json("/data/bt-state1.json", (err, state1) ->
       d3.json("/data/bt-state2.json", (err, state2) ->
 
+        #data processing variables
         state = []
         window.state = state
         state.push state1
@@ -41,6 +41,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
         colorTextures = []
         sizeTextures = []
 
+        #make position, color and size textures
         state.map (d,i) ->
           dataLength = state[i].nodes.length
 
@@ -91,7 +92,9 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           sizeTexture.needsUpdate = true
           sizeTextures.push sizeTexture
 
-        rtTexturePos = new THREE.WebGLRenderTarget(texSize,texSize, {
+
+        #fbo system construction
+        inPos = new THREE.WebGLRenderTarget(texSize,texSize, {
           wrapS:THREE.RepeatWrapping
           wrapT:THREE.RepeatWrapping
           minFilter: THREE.NearestFilter
@@ -100,41 +103,38 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           type:THREE.FloatType
           stencilBuffer: false
         })
-
-        outPos = rtTexturePos.clone()
+        outPos = inPos.clone()
 
         simulationShader = new THREE.ShaderMaterial({
-
             uniforms: {
                 start: { type: "t", value: textures[0] }
                 end: { type: "t", value: textures[1] }
                 timer: { type: "f", value: 0}
             }
-
             vertexShader: document.getElementById('fboVert').innerHTML,
             fragmentShader:  document.getElementById('fboFrag').innerHTML
-
         })
 
         fboParticles = new THREE.FBOUtils( texSize, renderer, simulationShader );
-        fboParticles.renderToTexture(rtTexturePos, outPos);
+        fboParticles.renderToTexture(inPos, outPos);
 
-        fboParticles.in = rtTexturePos;
+        fboParticles.in = inPos;
         fboParticles.out = outPos;
 
-        geometry2 = new THREE.Geometry();
+        #geometry construction
+        geometry = new THREE.Geometry();
 
         [0...texSize*texSize].forEach (i) ->
           vertex = new THREE.Vector3()
           vertex.x = ( i % texSize ) / texSize
           vertex.y = Math.floor( i / texSize ) / texSize
-          geometry2.vertices.push( vertex )
+          geometry.vertices.push( vertex )
 
+        #construct render material
         sprite = THREE.ImageUtils.loadTexture( "/textures/ring_transp_256.png" )
-
-        material2 = new THREE.ShaderMaterial {
+        material = new THREE.ShaderMaterial {
             uniforms: {
-                "map": { type: "t", value: rtTexturePos }
+                "map": { type: "t", value: inPos }
                 "width": { type: "f", value: texSize }
                 "height": { type: "f", value: texSize }
                 "pointSize": { type: "f", value: 2 }
@@ -153,29 +153,14 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
             blending: THREE.NormalBlending
         }
 
-        mesh2 = new THREE.PointCloud( geometry2, material2 )
-        scene.add( mesh2 )
-
-        if false
-          geometry = new THREE.BoxGeometry(1,1,1)
-
-          material = new THREE.MeshLambertMaterial({color: 0xCC0000})
-          cube = new THREE.Mesh(geometry, material)
-          scene.add(cube)
-
-          pointLight = new THREE.PointLight(0xFFFFFF)
-
-          pointLight.position.x = 10
-          pointLight.position.y = 50
-          pointLight.position.z = 130
-
-          scene.add(pointLight)
+        #final setup
+        mesh = new THREE.PointCloud( geometry, material )
+        scene.add( mesh )
 
         controls = new THREE.OrbitControls( camera, renderer.domElement )
         renderer.setSize(window.innerWidth, window.innerHeight)
 
         document.body.appendChild(renderer.domElement)
-
       )
     )
 
@@ -191,15 +176,10 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
       useTime = 1 - transTime
 
     simulationShader.uniforms.timer.value = useTime
-    material2.uniforms.timer.value = useTime
+    material.uniforms.timer.value = useTime
 
-    tmp = fboParticles.in
-    fboParticles.in = fboParticles.out
-    fboParticles.out = tmp
-
-    # simulationShader.uniforms.start.value = 1fboParticles.in
     fboParticles.simulate(fboParticles.out)
-    material2.uniforms.map.value = fboParticles.out
+    material.uniforms.map.value = fboParticles.out
 
     controls.update()
     renderer.render( scene, camera )
