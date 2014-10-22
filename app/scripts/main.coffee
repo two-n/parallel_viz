@@ -177,13 +177,11 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
       )
     )
 
-  transTime = 0
+  transTime = 1
   forward = false
 
   animate = (t) ->
     requestAnimationFrame(animate);
-
-    # transTime = Math.abs((t%throttle)/throttle - 0.5) * 2
 
     if forward
       useTime = transTime
@@ -208,6 +206,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
 
   document.addEventListener("click", (e) ->
     forward = not forward
+    transTime = 0
     d3.transition().duration(5000).tween("timer", () ->
       return (t) ->
         transTime = t
