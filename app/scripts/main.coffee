@@ -178,15 +178,16 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     )
 
   animate = (t) ->
+    requestAnimationFrame(animate);
 
     throttle = 10000.0
 
-    requestAnimationFrame(animate);
+    if lastTime is null then lastTime = t
 
-    tick = Math.abs((t%throttle)/throttle - 0.5) * 2
+    transTime = Math.abs((t%throttle)/throttle - 0.5) * 2
 
-    simulationShader.uniforms.timer.value = tick
-    material2.uniforms.timer.value = tick
+    simulationShader.uniforms.timer.value = transTime
+    material2.uniforms.timer.value = transTime
 
     tmp = fboParticles.in
     fboParticles.in = fboParticles.out
@@ -200,44 +201,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     renderer.render( scene, camera )
 
   init()
+
   animate(new Date().getTime());
 
-  # #basic render setup
-  # viewAngle = 75
-  # aspectRatio = window.innerWidth/window.innerHeight
-  # nearClip = 0.1
-  # farClip = 10000
-
-  # scene = new THREE.Scene()
-  # camera = new THREE.PerspectiveCamera(viewAngle, aspectRatio, nearClip, farClip)
-
-  # renderer = new THREE.WebGLRenderer()
-  # renderer.setSize(window.innerWidth, window.innerHeight)
-  # document.body.appendChild(renderer.domElement)
-
-  # geometry = new THREE.BoxGeometry(1,1,1)
-
-  # material = new THREE.MeshLambertMaterial({color: 0xCC0000})
-  # cube = new THREE.Mesh(geometry, material)
-  # scene.add(cube)
-
-  # pointLight = new THREE.PointLight(0xFFFFFF)
-
-  # pointLight.position.x = 10
-  # pointLight.position.y = 50
-  # pointLight.position.z = 130
-
-  # scene.add(pointLight)
-
-  # camera.position.z = 5
-
-  # render = () ->
-  #   requestAnimationFrame(render)
-
-  #   cube.rotation.x += 0.01
-  #   cube.rotation.y += 0.01
-
-  #   renderer.render(scene, camera)
-
-  # render()
 )
