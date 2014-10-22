@@ -26,8 +26,8 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
 
   init = () ->
     renderer = new THREE.WebGLRenderer()
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000)
-    camera.position.z = 2
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000)
+    camera.position.z = 0.8
     scene = new THREE.Scene()
 
     d3.json("/data/state1.json", (err, state1) ->
@@ -68,7 +68,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
             colorData[j*3+1] = parseInt(colorIn.substr(2,2),16)/255
             colorData[j*3+2] = parseInt(colorIn.substr(4,2),16)/255
 
-            sizeData[j*3] = parseFloat(d.r)
+            sizeData[j*3] = parseFloat(d.r)*2.9
             sizeData[j*3+1] = 0
             sizeData[j*3+2] = 0
 
@@ -204,7 +204,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
 
   init()
 
-  document.addEventListener("click", (e) ->
+  document.addEventListener("contextmenu", (e) ->
     forward = not forward
     transTime = 0
     d3.transition().duration(5000).tween("timer", () ->
