@@ -14,7 +14,7 @@ require.config
 
 requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js'], (d3, threejs) ->
 
-  texSize = 64
+  texSize = 128
   simulationShader = null
   fboParticles = null
   material2 = null
@@ -123,7 +123,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
 
         geometry2 = new THREE.Geometry();
 
-        [0...texSize*texSize*3].forEach (i) ->
+        [0...texSize*texSize].forEach (i) ->
           vertex = new THREE.Vector3()
           vertex.x = ( i % texSize ) / texSize
           vertex.y = Math.floor( i / texSize ) / texSize
