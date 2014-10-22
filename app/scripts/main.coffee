@@ -30,8 +30,9 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     camera.position.z = 0.8
     scene = new THREE.Scene()
 
-    d3.json("/data/state1.json", (err, state1) ->
-      d3.json("/data/state2.json", (err, state2) ->
+    d3.json("/data/bt-state1.json", (err, state1) ->
+      d3.json("/data/bt-state2.json", (err, state2) ->
+
         state = []
         window.state = state
         state.push state1
@@ -174,6 +175,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
         renderer.setSize(window.innerWidth, window.innerHeight)
 
         document.body.appendChild(renderer.domElement)
+
       )
     )
 
