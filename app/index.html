@@ -89,9 +89,9 @@
     vec4 color1 = texture2D( endColor, vUv );
 
     vec4 color = mix(color0, color1, timer);
-    color = vec4(color.xyz,0);
     vec4 glyph = texture2D( sprite, gl_PointCoord );
-    color = mix(color,glyph,0.5);
+    vec3 blend = mix(color,glyph,0.2).rgb;
+    color = vec4(blend,glyph.a);
 
     gl_FragColor = color;
     }

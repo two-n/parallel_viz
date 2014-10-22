@@ -149,7 +149,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
             fragmentShader: document.getElementById('fboRenderFrag').innerHTML
             depthTest: true
             transparent: true
-            blending: THREE.AdditiveBlending
+            blending: THREE.NormalBlending
         }
 
         mesh2 = new THREE.PointCloud( geometry2, material2 )
@@ -177,6 +177,8 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
       )
     )
 
+  transTime = 0
+
   animate = (t) ->
     requestAnimationFrame(animate);
 
@@ -184,7 +186,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
 
     if lastTime is null then lastTime = t
 
-    transTime = Math.abs((t%throttle)/throttle - 0.5) * 2
+    # transTime = Math.abs((t%throttle)/throttle - 0.5) * 2
 
     simulationShader.uniforms.timer.value = transTime
     material2.uniforms.timer.value = transTime
@@ -201,6 +203,13 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     renderer.render( scene, camera )
 
   init()
+
+  document.addEventListener("click", (e) ->
+    d3.transition().duration(5000).tween("timer", () ->
+      return (t) ->
+        transTime = t
+    )
+  )
 
   animate(new Date().getTime());
 
