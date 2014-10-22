@@ -37,6 +37,8 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
         state.push state1
         state.push state2
         textures = []
+        colorTextures = []
+        sizeTextures = []
 
         state.map (d,i) ->
           dataLength = state[i].nodes.length
@@ -52,16 +54,43 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           }
 
           data = (new Float32Array(texSize*texSize*3))
+          colorData = (new Float32Array(texSize*texSize*3))
+          sizeData = (new Float32Array(texSize*texSize*3))
           [0...data.length].forEach (i) -> data[i] = 0
-          state[i].nodes.map (d,i) ->
-            data[i*3] = scale.x(d.x)
-            data[i*3+1] = scale.y(d.y)
+          [0...colorData.length].forEach (i) -> colorData[i] = 0
+          [0...sizeData.length].forEach (i) -> sizeData[i] = 0
+          state[i].nodes.map (d,j) ->
+            data[j*3] = scale.x(d.x)
+            data[j*3+1] = scale.y(d.y)
+
+            colorIn = d.color.substr(1)
+            colorData[j*3] = parseInt(colorIn.substr(0,2),16)/255
+            colorData[j*3+1] = parseInt(colorIn.substr(2,2),16)/255
+            colorData[j*3+2] = parseInt(colorIn.substr(4,2),16)/255
+
+            sizeData[j*3] = 1
+            sizeData[j*3+1] = 0
+            sizeData[j*3+2] = 0
 
           texture = new THREE.DataTexture(data, texSize, texSize, THREE.RGBFormat, THREE.FloatType)
           texture.minFilter = THREE.NearestFilter
           texture.magFilter = THREE.NearestFilter
           texture.needsUpdate = true
           textures.push texture
+
+          colorTexture = new THREE.DataTexture(colorData, texSize, texSize, THREE.RGBFormat, THREE.FloatType)
+          colorTexture.minFilter = THREE.NearestFilter
+          colorTexture.magFilter = THREE.NearestFilter
+          colorTexture.needsUpdate = true
+          colorTextures.push colorTexture
+
+          sizeTexture = new THREE.DataTexture(sizeData, texSize, texSize, THREE.RGBFormat, THREE.FloatType)
+          sizeTexture.minFilter = THREE.NearestFilter
+          sizeTexture.magFilter = THREE.NearestFilter
+          sizeTexture.needsUpdate = true
+          sizeTextures.push sizeTexture
+
+          console.log sizeTextures,sizeData
 
         rtTexturePos = new THREE.WebGLRenderTarget(texSize,texSize, {
           wrapS:THREE.RepeatWrapping
@@ -109,7 +138,11 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
                 "height": { type: "f", value: texSize }
                 "pointSize": { type: "f", value: 2 }
                 "effector" : { type: "f", value: 0 }
-                "colorFromTexture": { type: "t", value: textures[0] }
+                "startColor": { type: "t", value: colorTextures[0] }
+                "endColor": { type: "t", value: colorTextures[1] }
+                "startSize": { type: "t", value: sizeTextures[0] }
+                "endSize": { type: "t", value: sizeTextures[1] }
+                "timer": { type: "f", value: 0}
             }
             vertexShader: document.getElementById('fboRenderVert').innerHTML
             fragmentShader: document.getElementById('fboRenderFrag').innerHTML
@@ -152,6 +185,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     tick = Math.abs((t%throttle)/throttle - 0.5) * 2
 
     simulationShader.uniforms.timer.value = tick
+    material2.uniforms.timer.value = tick
 
     tmp = fboParticles.in
     fboParticles.in = fboParticles.out

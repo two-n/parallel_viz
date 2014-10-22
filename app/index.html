@@ -40,6 +40,8 @@
 
         <script type="x-shader/x-vertex" id="fboRenderVert">
     uniform sampler2D map;
+    uniform sampler2D startSize;
+    uniform sampler2D endSize;
 
     uniform float width;
     uniform float height;
@@ -57,27 +59,31 @@
 
     vec3 position = ( texture2D( map, vUv ).rgb  );
 
-    gl_PointSize = pointSize;
+    gl_PointSize = ( texture2D( startSize, vUv ).r  );
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
     }
         </script>
         <script type="x-shader/x-fragment" id="fboRenderFrag">
     uniform sampler2D map;
-    uniform sampler2D colorFromTexture;
+    uniform sampler2D startColor;
+    uniform sampler2D endColor;
 
     uniform float effector;
 
     varying vec2 vUv;
     varying vec4 vPosition;
 
+    uniform float timer;
+
     void main()
     {
-    gl_FragColor = vec4( 1.2,1.1,1.8,1.0 );
-    gl_FragColor = texture2D( colorFromTexture, vUv );
-    gl_FragColor *= 1.5;
+    vec4 color0 = texture2D( startColor, vUv );
+    vec4 color1 = texture2D( endColor, vUv );
 
+    vec4 color = mix(color0, color1, timer);
 
+    gl_FragColor = color;
     }
         </script>
     <script data-main="assets/main.js" src="vendor/requirejs/require.js">></script>
