@@ -178,18 +178,20 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     )
 
   transTime = 0
+  forward = false
 
   animate = (t) ->
     requestAnimationFrame(animate);
 
-    throttle = 10000.0
-
-    if lastTime is null then lastTime = t
-
     # transTime = Math.abs((t%throttle)/throttle - 0.5) * 2
 
-    simulationShader.uniforms.timer.value = transTime
-    material2.uniforms.timer.value = transTime
+    if forward
+      useTime = transTime
+    else
+      useTime = 1 - transTime
+
+    simulationShader.uniforms.timer.value = useTime
+    material2.uniforms.timer.value = useTime
 
     tmp = fboParticles.in
     fboParticles.in = fboParticles.out
@@ -205,6 +207,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
   init()
 
   document.addEventListener("click", (e) ->
+    forward = not forward
     d3.transition().duration(5000).tween("timer", () ->
       return (t) ->
         transTime = t
