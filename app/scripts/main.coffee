@@ -5,14 +5,14 @@ require.config
     'threejs': '../vendor/threejs/build/three'
   shim:
     'd3': exports: 'd3'
-    "/vendor/FBOUtils.js": {
+    "vendor/FBOUtils.js": {
       deps: ["threejs"]
     }
-    "/vendor/OrbitControls.js": {
+    "vendor/OrbitControls.js": {
       deps: ["threejs"]
     }
 
-requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js'], (d3, threejs) ->
+requirejs( ['d3', 'threejs', 'vendor/FBOUtils.js' , 'vendor/OrbitControls.js'], (d3, threejs) ->
 
   texSize = 128
   simulationShader = null
@@ -29,8 +29,8 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
     camera.position.z = 0.8
     scene = new THREE.Scene()
 
-    d3.json("/data/bt-state1.json", (err, state1) ->
-      d3.json("/data/bt-state2.json", (err, state2) ->
+    d3.json("data/bt-state1.json", (err, state1) ->
+      d3.json("data/bt-state2.json", (err, state2) ->
 
         #data processing variables
         state = []
@@ -131,7 +131,7 @@ requirejs( ['d3', 'threejs', '/vendor/FBOUtils.js' , '/vendor/OrbitControls.js']
           geometry.vertices.push( vertex )
 
         #construct render material
-        sprite = THREE.ImageUtils.loadTexture( "/textures/ring_transp_256.png" )
+        sprite = THREE.ImageUtils.loadTexture( "textures/ring_transp_256.png" )
         material = new THREE.ShaderMaterial {
             uniforms: {
                 "map": { type: "t", value: inPos }

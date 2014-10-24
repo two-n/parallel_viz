@@ -76,6 +76,16 @@ module.exports = (grunt) ->
       options:
         livereload: true
 
+    rsync:
+      options:
+        args: ["-avz"]
+        recursive: true
+      deploy:
+        options:
+          src: "build/development"
+          host: "twoninc@two-n.com"
+          dest: "/home/twoninc/prototypes.two-n.com/parallel_viz/#{ grunt.option("target") ? "" }"
+
   grunt.registerTask 'default', [
     'clean:development'
     'copy:vendor'
